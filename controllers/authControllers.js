@@ -1,6 +1,7 @@
 const userModel = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const JWT = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 
 //Register Controller
 const registerController = async (req, res) => {
@@ -100,4 +101,88 @@ const loginController = async (req, res) => {
     }
 }
 
-module.exports = { registerController, loginController }
+//Reset Password Through Email
+const forgetPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).send({
+                message: "Please provide your email"
+            });
+        }
+
+        const checkUser = await userModel.findOne({ email });
+
+        if (!checkUser) {
+            return res.status(404).send({
+                message: "User not found, please register"
+            });
+        }
+
+        const token = JWT.sign({ email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            secure: true,
+            auth: {
+                user: process.env.MY_GMAIL,
+                pass: process.env.MY_PASSWORD
+            }
+        });
+
+        const receiver = {
+            from: process.env.MY_GMAIL,
+            to: email,
+            subject: "Password Reset Request",
+            text: `Click on the link to generate your new password: ${process.env.CLIENT_URL}/reset-password?token=${token}`
+        };
+
+        await transporter.sendMail(receiver);
+
+        return res.status(200).send({ message: "Password reset link sent successfully" });
+    } catch (error) {
+        console.error("Error sending email:", error);
+        return res.status(500).send({
+            message: "Something went wrong",
+            error: error.message // Send only the error message to avoid exposing sensitive information
+        });
+    }
+};
+
+//Function To Set New Password After Email
+const setPassword = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const { password } = req.body;
+        if (!password) {
+            return res.status(400).send({
+                message: "Please provide new password"
+            });
+        }
+
+        const decode = JWT.verify(token, process.env.JWT_SECRET);
+        const user = await userModel.findOne({ email: decode.email });
+
+        //Hashing Password
+        var salt = bcrypt.genSaltSync(10);
+        const newhashedPassword = await bcrypt.hash(password, salt);
+
+        user.password = newhashedPassword;
+
+        await user.save();
+        console.log("New Password: ", newhashedPassword);
+
+        return res.status(200).send({
+            message: "Password Reset Successfully"
+        })
+    } catch (error) {
+        console.error("Error sending email:", error);
+        return res.status(500).send({
+            message: "Something went wrong",
+            error: error.message // Send only the error message to avoid exposing sensitive information
+        });
+    }
+}
+
+module.exports = { registerController, loginController, forgetPassword, setPassword }
