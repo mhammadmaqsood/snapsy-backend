@@ -8,7 +8,7 @@ const getUserController = async (req, res) => {
         const user = await userModel.findById({ _id: req.body.id }, { _id: 0 });
         //Validation
         if (!user) {
-            return res.status(404).send({
+            return res.status(404).json({
                 success: false,
                 message: "User not found"
             })
@@ -17,7 +17,7 @@ const getUserController = async (req, res) => {
         //Hide Password
         user.password = undefined;
 
-        res.status(200).send({
+        res.status(200).json({
             success: true,
             message: "User get successfully",
             user
@@ -39,7 +39,7 @@ const updateUserController = async (req, res) => {
 
         //Validation
         if (!user) {
-            return res.status(404).send({
+            return res.status(404).json({
                 success: false,
                 message: "User not found"
             })
@@ -53,13 +53,13 @@ const updateUserController = async (req, res) => {
 
         //Save User
         await user.save();
-        res.status(200).send({
+        res.status(200).json({
             success: true,
             message: "User Updated Successfully"
         })
     } catch (error) {
         console.log(error)
-        res.status(500).send({
+        res.status(500).json({
             success: false,
             message: "Error in update API",
             error
