@@ -1,6 +1,6 @@
 const express = require("express");
 const { forgetPassword, setPassword } = require("../controllers/authControllers");
-const { getUserController, updateUserController } = require("../controllers/userController");
+const { getUserController, updateUserController, deleteProfileController } = require("../controllers/userController");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router()
@@ -17,5 +17,8 @@ router.post("/forget-password", authMiddleware, forgetPassword);
 
 //SET NEW PASSWORD FOR EMAIL SENT API
 router.post("/reset-password/:token", authMiddleware, setPassword);
+
+//DELETE USER
+router.delete("/deleteUser/:id", authMiddleware, deleteProfileController)
 
 module.exports = router;
