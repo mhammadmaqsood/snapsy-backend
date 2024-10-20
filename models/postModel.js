@@ -7,8 +7,8 @@ const postSchema = new mongoose.Schema({
     hashTags: { type: [String] },
     location: { type: String },
     createdAt: { type: Date, default: Date.now },
-    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }],
-    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment', default: [] }]
+    // likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }],
+    // comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment', default: [] }]
 })
 
 module.exports = mongoose.model("Post", postSchema)
