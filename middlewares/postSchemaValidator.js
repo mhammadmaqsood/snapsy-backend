@@ -9,8 +9,6 @@ const postValidationSchema = Joi.object({
     hashTags: Joi.array().items(Joi.string().max(30)),
     location: Joi.string().max(100).allow(null, ''),
     createdAt: Joi.date().default(Date.now),
-    // likes: Joi.array().items(Joi.string().pattern(/^[0-9a-fA-F]{24}$/)).default([]),
-    // comments: Joi.array().items(Joi.string().pattern(/^[0-9a-fA-F]{24}$/)).default([])
 });
 
 const createPostValidate = validator(postValidationSchema);

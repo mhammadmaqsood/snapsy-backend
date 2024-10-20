@@ -4,7 +4,7 @@ const postModel = require("../models/postModel");
 //CREATE POST CONTROLLER
 const createPostController = async (req, res) => {
     try {
-        const { id: userId, caption, media, hashTags, location, createdAt, likes, comments } = req.body;
+        const { id: userId, caption, media, hashTags, location, createdAt } = req.body;
 
         // JOI Validation
         const { error } = createPostValidate({
@@ -13,8 +13,6 @@ const createPostController = async (req, res) => {
             media,
             hashTags,
             location,
-            likes,
-            comments
         });
 
         if (error) {
@@ -34,8 +32,6 @@ const createPostController = async (req, res) => {
             hashTags,
             location,
             createdAt: new Date(),
-            likes,
-            comments
         });
 
         await newPost.save();
@@ -66,15 +62,13 @@ const updatePostController = async (req, res) => {
             })
         }
 
-        const { id: userId, caption, media, hashTags, location, createdAt, likes, comments } = req.body;
+        const { id: userId, caption, media, hashTags, location, createdAt } = req.body;
 
         //UPDATE
         if (caption) post.caption = caption;
         if (media) post.media = media;
         if (hashTags) post.hashTags = hashTags;
         if (location) post.location = location;
-        if (likes) post.likes = likes;
-        if (comments) post.comments = comments;
 
         //SAVE POST
         await post.save();
