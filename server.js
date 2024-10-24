@@ -3,6 +3,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const connectDb = require("./config/db");
+const config = require('./middlewares/env.validation');
 
 //Rest Object
 const app = express();
@@ -18,14 +19,15 @@ app.use(cors())
 app.use(express.json());
 app.use(morgan("dev"));
 
-app.use("/api/v1/auth", require("./routes/authRoutes"))
-app.use("/api/v1/user", require("./routes/userRoutes"))
-app.use("/api/v1/post", require("./routes/postRoutes"))
+app.use("/api/v1/auth", require("./routes/auth.routes"));
+app.use("/api/v1/user", require("./routes/user.routes"));
+app.use("/api/v1/post", require("./routes/post.routes"));
+app.use("/api/v1/like", require("./routes/like.routes"));
 
 //PORT
 const PORT = process.env.PORT || 8080;
 
 //Listen
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+app.listen(config.port, () => {
+    console.log(`Server running on port ${config.port}`)
 });

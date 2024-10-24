@@ -1,10 +1,10 @@
-const { createPostValidate } = require("../middlewares/postSchemaValidator");
-const postModel = require("../models/postModel");
+const { createPostValidate } = require("../middlewares/post.validation");
+const postModel = require("../models/post.model");
 
-//CREATE POST CONTROLLER
-const createPostController = async (req, res) => {
+//CREATE POST SERVICE
+const createNewPost = async (userBody, res) => {
     try {
-        const { id: userId, caption, media, hashTags, location, createdAt } = req.body;
+        const { id: userId, caption, media, hashTags, location, createdAt } = userBody;
 
         // JOI Validation
         const { error } = createPostValidate({
@@ -50,9 +50,10 @@ const createPostController = async (req, res) => {
     }
 };
 
-const updatePostController = async (req, res) => {
+//UPDATE POST SERVICE
+const updatePostContent = async (userParams, userBody, res) => {
     try {
-        const post = await postModel.findById({ _id: req.params.id });
+        const post = await postModel.findById({ _id: userParams });
 
         //Validation
         if (!post) {
@@ -62,7 +63,7 @@ const updatePostController = async (req, res) => {
             })
         }
 
-        const { id: userId, caption, media, hashTags, location, createdAt } = req.body;
+        const { id: userId, caption, media, hashTags, location, createdAt } = userBody;
 
         //UPDATE
         if (caption) post.caption = caption;
@@ -87,7 +88,7 @@ const updatePostController = async (req, res) => {
 }
 
 //GET ALL THE POSTS
-const getPostsController = async (req, res) => {
+const getPosts = async (userBody, res) => {
     try {
         const posts = await postModel.find();
         res.status(200).json({
@@ -105,10 +106,10 @@ const getPostsController = async (req, res) => {
     }
 }
 
-//DELETE POST CONTROLLER
-const deletePostController = async (req, res) => {
+//DELETE POST SERVICE
+const deletePostContent = async (userParams, res) => {
     try {
-        await postModel.findByIdAndDelete(req.params.id);
+        await postModel.findByIdAndDelete(userParams);
         return res.status(200).json({
             success: true,
             message: "Post has been deleted"
@@ -123,4 +124,4 @@ const deletePostController = async (req, res) => {
     }
 }
 
-module.exports = { createPostController, updatePostController, getPostsController, deletePostController };
+module.exports = { createNewPost, updatePostContent, getPosts, deletePostContent };
