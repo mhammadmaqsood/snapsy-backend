@@ -24,6 +24,7 @@ app.use("/api/v1/user", require("./routes/user.routes"));
 app.use("/api/v1/post", require("./routes/post.routes"));
 app.use("/api/v1/like", require("./routes/like.routes"));
 app.use("/api/v1/comment", require("./routes/comment.routes"));
+app.use("/api/v1/reel", require("./routes/reel.routes"));
 
 //PORT
 const PORT = process.env.PORT || 8080;
