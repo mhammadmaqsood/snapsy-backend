@@ -13,7 +13,7 @@ const commentsSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Story",
     },
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Ensure `required: true`
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     commentText: {
         type: String,
         required: true

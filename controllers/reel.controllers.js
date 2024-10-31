@@ -4,11 +4,10 @@ const reelService = require("../services/reel.service");
 //ADD REEL
 exports.createReel = async (req, res) => {
     try {
-        const { media, caption, hashtags } = req.body;
-        const userId = req.body.id;
+        const { media, caption, hashtags, id } = req.body;
+        const userId = id;
         const { error, value } = reelValidate({ media, caption, hashtags });
-        console.log("User Id: ", userId);
-        if (error) {
+        if (error?.details?.length) {
             return res.status(400).json({ message: error.details[0].message });
         }
 
@@ -32,20 +31,21 @@ exports.getReels = async (req, res) => {
         return res.status(200).json({ success: true, data: reels });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: "Server error while fetching reels", error });
+        return res.status(500).json({ message: "Server error while fetching reels", error: error.message });
     }
 }
 
 //GET REEL BY ID
 exports.getReelById = async (req, res) => {
     try {
-        const reel = await reelService.getReelById(req.params.id);
+        const reelId = req.params.id;
+        const reel = await reelService.getReelById(reelId);
         if (!reel) {
             return res.status(404).json({ message: "Reel not found" });
         }
         return res.status(200).json({ success: true, data: reel });
     } catch (error) {
-        return res.status(500).json({ message: "Server error while fetching reel by ID", error: error.message });
+        return res.status(500).json({ message: "Server error while fetching reel by ID:", error: error.message });
     }
 }
 
@@ -57,13 +57,13 @@ exports.updateReel = async (req, res) => {
         if (error) {
             return res.status(400).json({ message: error.details[0].message });
         }
-
-        const reel = await reelService.updateReel(req.params.id, value);
+        const reelId = req.params.id
+        const reel = await reelService.updateReel(reelId, value);
 
         if (!reel) {
             return res.status(404).json({ message: "Reel not found" });
         }
-        return res.status(200).json({ success: true, data: reel });
+        return res.status.json({ success: true, data: reel });
     } catch (error) {
         return res.status(500).json({ message: "Server error in update reel API", error: error.message });
     }
@@ -76,7 +76,7 @@ exports.deleteReel = async (req, res) => {
         if (!deleted) {
             return res.status(404).json({ message: "Reel not found" });
         }
-        return res.status(200).json({ success: true, message: "Reel deleted successfully" });
+        return res.status(204).json({ success: true, message: "Reel deleted successfully" });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Server error while deleting reel", error });

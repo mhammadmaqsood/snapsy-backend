@@ -17,7 +17,6 @@ const reelSchema = new Schema({
     hashtags: {
         type: [String]
     },
-    likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
 }, { timestamps: true });
 
-module.exports = mongoose.model("Reel", reelSchema);
+module.exports = mongoose.model("Story", reelSchema);
