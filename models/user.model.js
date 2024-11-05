@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-//Schema
 const userSchema = new mongoose.Schema({
     userName: {
         type: String,
@@ -29,8 +28,13 @@ const userSchema = new mongoose.Schema({
     profile: {
         type: String,
         default: "https://media.sproutsocial.com/uploads/2022/06/profile-picture.jpeg"
+    },
+    stripeCustomerId: String,
+    subscriptionStatus: {
+        type: String,
+        enum: ["active", "canceled", "past_due"],
+        default: "canceled"
     }
 }, { timestamps: true })
 
-//export
 module.exports = mongoose.model("User", userSchema)
