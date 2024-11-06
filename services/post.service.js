@@ -87,14 +87,21 @@ const updatePostContent = async (userParams, userBody, res) => {
     }
 }
 
-//GET ALL THE POSTS
-const getPosts = async (userBody, res) => {
+const getPosts = async (req, res) => {
     try {
-        const posts = await postModel.find();
+        const { limit, skip } = req.pagination; // Retrieve pagination values from middleware
+
+        // Fetch posts with pagination, sorted by creation date (most recent first)
+        const posts = await postModel
+            .find()
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .skip(skip);
+
         res.status(200).json({
             success: true,
             message: 'Posts retrieved successfully',
-            posts
+            posts,
         });
     } catch (error) {
         console.error(error);
@@ -104,7 +111,7 @@ const getPosts = async (userBody, res) => {
             error: error.message
         });
     }
-}
+};
 
 //DELETE POST SERVICE
 const deletePostContent = async (userParams, res) => {

@@ -13,7 +13,7 @@ const unlike = async (req, res) => {
 
 //GET ALL LIKES FOR A SPECIFIC POST
 const getLikes = async (req, res) => {
-    await getLikesForPost(req.params, res);
+    await getLikesForPost(req, res);
 }
 
 module.exports = { addLike, unlike, getLikes };

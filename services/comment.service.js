@@ -38,8 +38,8 @@ const newComment = async (userBody, res) => {
     }
 }
 
-//GET COMMENTS
-const getComment = async (userQuery, res) => {
+// GET COMMENTS SERVICE WITH PAGINATION
+const getComment = async (req, userQuery, res) => {
     const { postId, reelId, storyId } = userQuery;
     try {
         const filter = {};
@@ -47,16 +47,20 @@ const getComment = async (userQuery, res) => {
         if (reelId) filter.reelId = reelId;
         if (storyId) filter.storyId = storyId;
 
-        const comments = await Comment.find(filter);
+        // Apply pagination
+        const comments = await Comment.find(filter)
+            .skip(req.pagination.skip)
+            .limit(req.pagination.limit)
+            .sort({ createdAt: -1 });
 
         res.status(200).json({
             message: "Comments retrieved successfully",
-            comments
-        })
+            comments,
+        });
     } catch (error) {
         res.status(500).json({
             message: "Server error in get comments API",
-            error
+            error: error.message
         });
     }
 }
