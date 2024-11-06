@@ -4,6 +4,8 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 const connectDb = require("./config/db");
 const config = require('./middlewares/env.validation');
+const stripeController = require("./controllers/stripe.controllers");
+const bodyParser = require('body-parser');
 
 //Rest Object
 const app = express();
@@ -16,6 +18,9 @@ connectDb();
 
 //Middlewares
 app.use(cors())
+
+app.post('/webhook', express.raw({ type: 'application/json' }), stripeController.subscriptionWebhook);
+
 app.use(express.json());
 app.use(morgan("dev"));
 
@@ -26,6 +31,8 @@ app.use("/api/v1/like", require("./routes/like.routes"));
 app.use("/api/v1/comment", require("./routes/comment.routes"));
 app.use("/api/v1/reel", require("./routes/reel.routes"));
 app.use("/api/v1/story", require("./routes/story.routes"));
+app.use("/api/v1/stripe", require("./routes/stripe.routes"));
+
 
 //PORT
 const PORT = process.env.PORT || 8080;
