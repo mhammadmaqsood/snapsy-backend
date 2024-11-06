@@ -43,15 +43,28 @@ const unlikePost = async (userBody, res) => {
 }
 
 //GET ALL LIKES FOR A SPECIFIC POST
-const getLikesForPost = async (userParams, res) => {
+const getLikesForPost = async (req, res) => {
     try {
-        const { postId } = userParams;
+        const { postId } = req.params;
+        const { limit, skip } = req.pagination;
 
-        const likes = await likeModel.find({ postId }).populate("userId", "userName");
+        const likes = await likeModel.find({ postId })
+            .populate("userId", "userName")
+            .skip(skip)
+            .limit(limit);
 
-        res.status(200).json({ likes });
+        const totalLikes = await likeModel.countDocuments({ postId });
+
+        res.status(200).json({
+            success: true,
+            message: "Likes retrieved successfully",
+            likes,
+            totalLikes,
+            totalPages: Math.ceil(totalLikes / limit),
+            currentPage: (skip / limit) + 1
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Server error in get all likes for specific post API', error });
+        res.status(500).json({ message: 'Server error in get all likes for specific post API', error: error.message });
     }
 }
 

@@ -8,7 +8,7 @@ const addComment = async (req, res) => {
 
 //GET COMMENTS
 const getComments = async (req, res) => {
-    await getComment(req.query, res)
+    await getComment(req, req.query, res)
 }
 
 //DELETE COMMENT
