@@ -28,7 +28,7 @@ exports.createBillingPortalSession = async (customerId, returnUrl) => {
     })
 }
 
-exports.handleWebhookEvent = async (event) => {
+exports.subscriptionWebhookEvent = async (event) => {
     switch (event.type) {
         case "checkout.session.completed":
             const session = event.data.object;

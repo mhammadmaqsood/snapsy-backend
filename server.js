@@ -19,7 +19,7 @@ connectDb();
 //Middlewares
 app.use(cors())
 
-app.post('/webhook', express.raw({ type: 'application/json' }), stripeController.handleWebhook);
+app.post('/webhook', express.raw({ type: 'application/json' }), stripeController.subscriptionWebhook);
 
 app.use(express.json());
 app.use(morgan("dev"));

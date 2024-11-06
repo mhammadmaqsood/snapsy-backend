@@ -10,11 +10,11 @@ exports.subscribe = async (req, res) => {
         // Determine priceId from query parameter (e.g ?plan=starter)
         const plan = req.query.plan;
         const priceId = plan === "starter" ? process.env.STARTER_PRICE_ID : process.env.PRO_PRICE_ID;
-
+        const baseUrl = process.env.BASE_URL
         const session = await stripeService.createCheckoutSession(
             priceId,
-            `${process.env.BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-            `${process.env.BASE_URL}/cancel`
+            `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+            `${baseUrl}/cancel`
         );
 
         res.json({ url: session.url });
@@ -27,7 +27,7 @@ exports.subscribe = async (req, res) => {
 exports.success = async (req, res) => {
     try {
         const session = await stripeService.retrieveCheckoutSession(req.query.session_id);
-        res.send({ message: "Subscription successful", session });
+        res.json({ message: "Subscription successful", session });
     } catch (err) {
         res.status(500).json({ message: "Exception in success controller" })
     }
@@ -36,11 +36,11 @@ exports.success = async (req, res) => {
 exports.billingPortal = async (req, res) => {
     try {
         const user = await User.findById({ _id: req.body.id });
-        if (!user || !user.stripeCustomerId) return res.status(404).json({ message: "User not found" });
-
+        if (!user?.stripeCustomerId) return res.status(404).json({ message: "User not found" });
+        const baseUrl = process.env.BASE_URL
         const portalSession = await stripeService.createBillingPortalSession(
             user.stripeCustomerId,
-            process.env.BASE_URL
+            baseUrl
         );
 
         res.json({ url: portalSession.url });
@@ -49,14 +49,14 @@ exports.billingPortal = async (req, res) => {
     }
 }
 
-exports.handleWebhook = async (req, res) => {
+exports.subscriptionWebhook = async (req, res) => {
     let event;
     try {
         const sig = req.headers["stripe-signature"];
         // Use the raw body for Stripe's signature verification
         event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET_KEY);
 
-        await stripeService.handleWebhookEvent(event);
+        await stripeService.subscriptionWebhookEvent(event);
 
         res.status(200).send('Webhook received successfully');
     } catch (err) {
